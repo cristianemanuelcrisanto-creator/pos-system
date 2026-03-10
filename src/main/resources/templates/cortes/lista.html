@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cortes de Caja</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1 class="page-title">Cortes de caja</h1>
+    <p class="subtitle">Consulta los cierres diarios de caja y diferencias detectadas.</p>
+
+    <div class="card">
+        <div class="actions-inline" style="margin-bottom: 18px;">
+            <a th:href="@{/cortes/nuevo}">Nuevo corte</a>
+            <a th:href="@{/}" class="btn btn-secondary">Inicio</a>
+        </div>
+
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Ventas sistema</th>
+                <th>Efectivo real</th>
+                <th>Diferencia</th>
+                <th>Observaciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="corte : ${cortes}">
+                <td th:text="${corte.id}"></td>
+                <td th:text="${corte.fecha}"></td>
+                <td th:text="${corte.ventasSistema}"></td>
+                <td th:text="${corte.efectivoReal}"></td>
+                <td th:text="${corte.diferencia}"></td>
+                <td th:text="${corte.observaciones}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a th:href="@{/}" class="link-back">Volver al inicio</a>
+</div>
+</body>
+</html>

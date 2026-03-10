@@ -10,4 +10,7 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
 
     @Query("SELECT COALESCE(SUM(v.total), 0) FROM Venta v")
     BigDecimal obtenerTotalVentas();
+
+    @Query("SELECT COALESCE(SUM(v.total), 0) FROM Venta v WHERE FUNCTION('DATE', v.fechaHora) = CURRENT_DATE")
+    BigDecimal obtenerTotalVentasDelDia();
 }

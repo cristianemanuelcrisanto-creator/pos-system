@@ -2,30 +2,36 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Productos</title>
+    <title>Productos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-    <h1>Productos</h1>
+<div class="container">
+    <h1 class="page-title">Productos</h1>
+    <p class="subtitle">Administra inventario, precios y stock disponible.</p>
 
-    <a th:href="@{/productos/nuevo}">Nuevo producto</a>
-    <br><br>
+    <div class="card">
+        <div class="actions-inline" style="margin-bottom: 18px;">
+            <a th:href="@{/productos/nuevo}">Nuevo producto</a>
+            <a th:href="@{/}" class="btn btn-secondary">Inicio</a>
+        </div>
 
-    <table border="1">
-        <thead>
+        <table>
+            <thead>
             <tr>
                 <th>ID</th>
                 <th>Nombre</th>
                 <th>Categoría</th>
-                <th>Precio compra</th>
-                <th>Precio venta</th>
-                <th>Stock actual</th>
+                <th>Compra</th>
+                <th>Venta</th>
+                <th>Stock</th>
                 <th>Stock mínimo</th>
                 <th>Unidad</th>
                 <th>Activo</th>
                 <th>Acciones</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <tr th:each="producto : ${productos}">
                 <td th:text="${producto.id}"></td>
                 <td th:text="${producto.nombre}"></td>
@@ -36,19 +42,19 @@
                 <td th:text="${producto.stockMinimo}"></td>
                 <td th:text="${producto.unidad}"></td>
                 <td th:text="${producto.activo}"></td>
-                <td>
+                <td class="table-actions">
                     <a th:href="@{/productos/editar/{id}(id=${producto.id})}">Editar</a>
-                    |
                     <a th:href="@{/productos/eliminar/{id}(id=${producto.id})}"
                        onclick="return confirm('¿Seguro que quieres eliminar este producto?')">
                         Eliminar
                     </a>
                 </td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 
-    <br>
-    <a th:href="@{/}">Volver al inicio</a>
+    <a th:href="@{/}" class="link-back">Volver al inicio</a>
+</div>
 </body>
 </html>

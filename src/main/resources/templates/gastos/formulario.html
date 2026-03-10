@@ -3,27 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Nuevo Gasto</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h1>Nuevo Gasto</h1>
+<div class="container">
+    <h1 class="page-title">Nuevo gasto</h1>
+    <p class="subtitle">Registra una salida de dinero.</p>
 
-<form th:action="@{/gastos/guardar}" th:object="${gasto}" method="post">
-    <label>Concepto:</label>
-    <input type="text" th:field="*{concepto}" required>
-    <br><br>
+    <div class="card form-card">
+        <form th:action="@{/gastos/guardar}" th:object="${gasto}" method="post">
+            <label>Concepto:</label>
+            <input type="text" th:field="*{concepto}" required>
 
-    <label>Categoría:</label>
-    <input type="text" th:field="*{categoria}" required>
-    <br><br>
+            <label>Categoría:</label>
+            <input type="text" th:field="*{categoria}" required>
 
-    <label>Monto:</label>
-    <input type="number" step="0.01" th:field="*{monto}" required>
-    <br><br>
+            <label>Monto:</label>
+            <input type="number" step="0.01" th:field="*{monto}" required>
 
-    <button type="submit">Guardar</button>
-</form>
-
-<br>
-<a th:href="@{/gastos}">Volver</a>
+            <div class="actions-inline">
+                <button type="submit">Guardar</button>
+                <a th:href="@{/gastos}" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
 </body>
 </html>

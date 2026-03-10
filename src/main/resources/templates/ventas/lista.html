@@ -3,39 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Historial de Ventas</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+<div class="container">
+    <h1 class="page-title">Historial de ventas</h1>
+    <p class="subtitle">Consulta todas las ventas registradas.</p>
 
-<h1>Historial de Ventas</h1>
+    <div class="card">
+        <div class="actions-inline" style="margin-bottom: 18px;">
+            <a href="/ventas/nueva">Nueva venta</a>
+            <a href="/" class="btn btn-secondary">Inicio</a>
+        </div>
 
-<a href="/ventas/nueva">Nueva venta</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha</th>
+                    <th>Método de pago</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="venta : ${ventas}">
+                    <td th:text="${venta.id}"></td>
+                    <td th:text="${venta.fechaHora}"></td>
+                    <td th:text="${venta.metodoPago}"></td>
+                    <td th:text="${venta.total}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-<br><br>
-
-<table border="1">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Método de pago</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        <tr th:each="venta : ${ventas}">
-            <td th:text="${venta.id}"></td>
-            <td th:text="${venta.fechaHora}"></td>
-            <td th:text="${venta.metodoPago}"></td>
-            <td th:text="${venta.total}"></td>
-        </tr>
-    </tbody>
-
-</table>
-
-<br>
-
-<a href="/">Volver al inicio</a>
-
+    <a href="/" class="link-back">Volver al inicio</a>
+</div>
 </body>
 </html>

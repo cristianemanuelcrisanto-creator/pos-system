@@ -3,43 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h1>Dashboard del Negocio</h1>
+<div class="container">
+    <h1 class="page-title">Dashboard del Negocio</h1>
+    <p class="subtitle">Resumen general de ventas, gastos y productos.</p>
 
-<h2>Resumen general</h2>
-<ul>
-    <li>Total de ventas: $<span th:text="${totalVentas}"></span></li>
-    <li>Total de gastos: $<span th:text="${totalGastos}"></span></li>
-    <li>Utilidad estimada: $<span th:text="${utilidad}"></span></li>
-    <li>Total de productos registrados: <span th:text="${totalProductos}"></span></li>
-</ul>
+    <div class="grid grid-2">
+        <div class="stat-card">
+            <div class="stat-label">Total de ventas</div>
+            <div class="stat-value">$<span th:text="${totalVentas}"></span></div>
+        </div>
 
-<h2>Productos con stock bajo</h2>
-<table border="1" th:if="${productosStockBajo != null and !productosStockBajo.isEmpty()}">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Stock actual</th>
-        <th>Stock mínimo</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="producto : ${productosStockBajo}">
-        <td th:text="${producto.id}"></td>
-        <td th:text="${producto.nombre}"></td>
-        <td th:text="${producto.stockActual}"></td>
-        <td th:text="${producto.stockMinimo}"></td>
-    </tr>
-    </tbody>
-</table>
+        <div class="stat-card">
+            <div class="stat-label">Total de gastos</div>
+            <div class="stat-value">$<span th:text="${totalGastos}"></span></div>
+        </div>
 
-<p th:if="${productosStockBajo == null or productosStockBajo.isEmpty()}">
-    No hay productos con stock bajo.
-</p>
+        <div class="stat-card">
+            <div class="stat-label">Utilidad estimada</div>
+            <div class="stat-value">$<span th:text="${utilidad}"></span></div>
+        </div>
 
-<br>
-<a href="/">Volver al inicio</a>
+        <div class="stat-card">
+            <div class="stat-label">Productos registrados</div>
+            <div class="stat-value"><span th:text="${totalProductos}"></span></div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+        <h2 style="margin-bottom: 16px;">Productos con stock bajo</h2>
+
+        <table th:if="${productosStockBajo != null and !productosStockBajo.isEmpty()}">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Stock actual</th>
+                <th>Stock mínimo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="producto : ${productosStockBajo}">
+                <td th:text="${producto.id}"></td>
+                <td th:text="${producto.nombre}"></td>
+                <td th:text="${producto.stockActual}"></td>
+                <td th:text="${producto.stockMinimo}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <p th:if="${productosStockBajo == null or productosStockBajo.isEmpty()}">
+            No hay productos con stock bajo.
+        </p>
+    </div>
+
+    <a href="/" class="link-back">Volver al inicio</a>
+</div>
 </body>
 </html>

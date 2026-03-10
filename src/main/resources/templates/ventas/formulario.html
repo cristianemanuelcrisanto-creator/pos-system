@@ -2,72 +2,120 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Nueva Venta</title>
+    <title>Punto de Venta</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h1>Nueva Venta</h1>
+<div class="container">
+    <h1 class="page-title">Punto de venta</h1>
+    <p class="subtitle">Busca productos rápido, agrégalos al carrito y cobra sin perder tiempo.</p>
 
-<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+    <p th:if="${error}" th:text="${error}" class="text-danger" style="margin-bottom: 18px;"></p>
 
-<h2>Agregar producto</h2>
-<form th:action="@{/ventas/agregar}" method="post">
-    <label>Producto:</label>
-    <select name="productoId" required>
-        <option value="">Selecciona un producto</option>
-        <option th:each="producto : ${productos}"
-                th:value="${producto.id}"
-                th:text="${producto.nombre + ' - $' + producto.precioVenta + ' - Stock: ' + producto.stockActual}">
-        </option>
-    </select>
+    <div class="pos-layout">
+        <!-- Catálogo -->
+        <div class="card">
+            <div class="pos-header-row">
+                <h2>Productos</h2>
+                <input type="text" id="buscadorProductos" placeholder="Buscar producto..." class="search-input">
+            </div>
 
-    <label>Cantidad:</label>
-    <input type="number" name="cantidad" min="1" required>
+            <div class="product-grid" id="productGrid">
+                <div class="product-card"
+                     th:each="producto : ${productos}"
+                     th:attr="data-nombre=${#strings.toLowerCase(producto.nombre)}">
 
-    <button type="submit">Agregar</button>
-</form>
+                    <div class="product-name" th:text="${producto.nombre}"></div>
+                    <div class="product-price">$<span th:text="${producto.precioVenta}"></span></div>
+                    <div class="product-stock">
+                        Stock: <span th:text="${producto.stockActual}"></span>
+                    </div>
 
-<br>
+                    <form th:action="@{/ventas/agregar}" method="post" class="product-form">
+                        <input type="hidden" name="productoId" th:value="${producto.id}">
 
-<h2>Carrito</h2>
-<table border="1" th:if="${carrito != null and !carrito.isEmpty()}">
-    <thead>
-    <tr>
-        <th>Producto</th>
-        <th>Cantidad</th>
-        <th>Precio unitario</th>
-        <th>Subtotal</th>
-        <th>Acción</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="item : ${carrito}">
-        <td th:text="${item.nombreProducto}"></td>
-        <td th:text="${item.cantidad}"></td>
-        <td th:text="${item.precioUnitario}"></td>
-        <td th:text="${item.subtotal}"></td>
-        <td>
-            <a th:href="@{/ventas/eliminar-item/{id}(id=${item.productoId})}">Eliminar</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+                        <label>Cantidad</label>
+                        <input type="number" name="cantidad" min="1" value="1" required>
 
-<p th:if="${carrito == null or carrito.isEmpty()}">No hay productos en el carrito.</p>
+                        <button type="submit" th:disabled="${producto.stockActual <= 0}">
+                            Agregar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-<br>
-<h3>Total: $<span th:text="${total}"></span></h3>
+        <!-- Carrito -->
+        <div class="card pos-cart">
+            <h2 style="margin-bottom: 18px;">Carrito</h2>
 
-<form th:action="@{/ventas/guardar}" method="post">
-    <label>Método de pago:</label>
-    <select name="metodoPago" required>
-        <option value="EFECTIVO">Efectivo</option>
-        <option value="TRANSFERENCIA">Transferencia</option>
-    </select>
+            <table th:if="${carrito != null and !carrito.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cant.</th>
+                    <th>Subtotal</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${carrito}">
+                    <td th:text="${item.nombreProducto}"></td>
+                    <td th:text="${item.cantidad}"></td>
+                    <td>$<span th:text="${item.subtotal}"></span></td>
+                    <td>
+                        <a th:href="@{/ventas/eliminar-item/{id}(id=${item.productoId})}" class="text-danger">
+                            Quitar
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-    <button type="submit">Cobrar</button>
-</form>
+            <p th:if="${carrito == null or carrito.isEmpty()}">
+                No hay productos en el carrito.
+            </p>
 
-<br>
-<a th:href="@{/}">Volver al inicio</a>
+            <div class="total-box">
+                <span>Total</span>
+                <strong>$<span th:text="${total}"></span></strong>
+            </div>
+
+            <form th:action="@{/ventas/guardar}" method="post">
+                <label>Método de pago:</label>
+                <select name="metodoPago" required>
+                    <option value="EFECTIVO">Efectivo</option>
+                    <option value="TRANSFERENCIA">Transferencia</option>
+                </select>
+
+                <div class="actions-inline">
+                    <button type="submit">Cobrar</button>
+                    <a th:href="@{/ventas}" class="btn btn-secondary">Historial</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <a th:href="@{/}" class="link-back">Volver al inicio</a>
+</div>
+
+<script>
+    const buscador = document.getElementById('buscadorProductos');
+    const tarjetas = document.querySelectorAll('.product-card');
+
+    buscador.addEventListener('input', function () {
+        const texto = this.value.toLowerCase().trim();
+
+        tarjetas.forEach(tarjeta => {
+            const nombre = tarjeta.getAttribute('data-nombre');
+
+            if (nombre.includes(texto)) {
+                tarjeta.style.display = 'block';
+            } else {
+                tarjeta.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>

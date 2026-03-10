@@ -1,23 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>POS System</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
+<div class="container">
+    <h1 class="page-title">Hola, Cristian 👋</h1>
+    <p class="subtitle">Bienvenido a tu sistema POS para restaurante y tienda.</p>
 
-<h1>Bienvenido al sistema POS</h1>
+    <div class="card">
+        <h2 style="margin-bottom: 12px;">Panel principal</h2>
+        <p class="subtitle">Administra ventas, inventario, gastos y reportes desde un solo lugar.</p>
 
-<p>Tu backend ya está funcionando.</p>
-
-<a href="/productos">Productos</a>
-<br><br>
-<a href="/ventas/nueva">Nueva venta</a>
-<br><br>
-<a href="/ventas">Historial de ventas</a>
-<br><br>
-<a href="/gastos">Gastos</a>
-<br><br>
-<a href="/dashboard">Dashboard</a>
-
+        <div class="menu-links">
+            <a href="/productos">Productos</a>
+            <a href="/ventas/nueva">Nueva venta</a>
+            <a href="/ventas">Historial de ventas</a>
+            <a href="/gastos">Gastos</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/cortes">Cortes de caja</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

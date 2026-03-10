@@ -2,36 +2,43 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Gastos</title>
+    <title>Gastos</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
-<h1>Gastos</h1>
+<div class="container">
+    <h1 class="page-title">Gastos</h1>
+    <p class="subtitle">Registra todas las salidas de dinero del negocio.</p>
 
-<a th:href="@{/gastos/nuevo}">Nuevo gasto</a>
-<br><br>
+    <div class="card">
+        <div class="actions-inline" style="margin-bottom: 18px;">
+            <a th:href="@{/gastos/nuevo}">Nuevo gasto</a>
+            <a th:href="@{/}" class="btn btn-secondary">Inicio</a>
+        </div>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Concepto</th>
-        <th>Categoría</th>
-        <th>Monto</th>
-        <th>Fecha</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="gasto : ${gastos}">
-        <td th:text="${gasto.id}"></td>
-        <td th:text="${gasto.concepto}"></td>
-        <td th:text="${gasto.categoria}"></td>
-        <td th:text="${gasto.monto}"></td>
-        <td th:text="${gasto.fechaHora}"></td>
-    </tr>
-    </tbody>
-</table>
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Concepto</th>
+                <th>Categoría</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="gasto : ${gastos}">
+                <td th:text="${gasto.id}"></td>
+                <td th:text="${gasto.concepto}"></td>
+                <td th:text="${gasto.categoria}"></td>
+                <td th:text="${gasto.monto}"></td>
+                <td th:text="${gasto.fechaHora}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-<br>
-<a th:href="@{/}">Volver al inicio</a>
+    <a th:href="@{/}" class="link-back">Volver al inicio</a>
+</div>
 </body>
 </html>

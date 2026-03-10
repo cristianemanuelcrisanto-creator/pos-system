@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Corte de Caja</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<div class="container">
+    <h1 class="page-title">Nuevo corte de caja</h1>
+    <p class="subtitle">Compara lo registrado por el sistema con el efectivo real.</p>
+
+    <div class="card form-card">
+        <form th:action="@{/cortes/guardar}" th:object="${corteCaja}" method="post">
+            <label>Fecha:</label>
+            <input type="date" th:field="*{fecha}" readonly>
+
+            <label>Ventas del sistema:</label>
+            <input type="number" step="0.01" th:field="*{ventasSistema}" readonly>
+
+            <label>Efectivo real contado:</label>
+            <input type="number" step="0.01" th:field="*{efectivoReal}" required>
+
+            <label>Observaciones:</label>
+            <input type="text" th:field="*{observaciones}">
+
+            <div class="actions-inline">
+                <button type="submit">Guardar corte</button>
+                <a th:href="@{/cortes}" class="btn btn-secondary">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
