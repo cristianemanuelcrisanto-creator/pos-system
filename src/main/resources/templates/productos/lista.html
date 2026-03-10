@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <h1>Productos</h1>
+
+    <a th:href="@{/productos/nuevo}">Nuevo producto</a>
+    <br><br>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio compra</th>
+                <th>Precio venta</th>
+                <th>Stock actual</th>
+                <th>Stock mínimo</th>
+                <th>Unidad</th>
+                <th>Activo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="producto : ${productos}">
+                <td th:text="${producto.id}"></td>
+                <td th:text="${producto.nombre}"></td>
+                <td th:text="${producto.categoria}"></td>
+                <td th:text="${producto.precioCompra}"></td>
+                <td th:text="${producto.precioVenta}"></td>
+                <td th:text="${producto.stockActual}"></td>
+                <td th:text="${producto.stockMinimo}"></td>
+                <td th:text="${producto.unidad}"></td>
+                <td th:text="${producto.activo}"></td>
+                <td>
+                    <a th:href="@{/productos/editar/{id}(id=${producto.id})}">Editar</a>
+                    |
+                    <a th:href="@{/productos/eliminar/{id}(id=${producto.id})}"
+                       onclick="return confirm('¿Seguro que quieres eliminar este producto?')">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <a th:href="@{/}">Volver al inicio</a>
+</body>
+</html>

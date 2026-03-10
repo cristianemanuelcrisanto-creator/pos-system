@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Producto</title>
+</head>
+<body>
+    <h1>Nuevo Producto</h1>
+
+    <form th:action="@{/productos/guardar}" th:object="${producto}" method="post">
+
+        <input type="hidden" th:field="*{id}">
+
+        <label>Nombre:</label>
+        <input type="text" th:field="*{nombre}" required>
+        <br><br>
+
+        <label>Categoría:</label>
+        <input type="text" th:field="*{categoria}" required>
+        <br><br>
+
+        <label>Precio compra:</label>
+        <input type="number" step="0.01" th:field="*{precioCompra}" required>
+        <br><br>
+
+        <label>Precio venta:</label>
+        <input type="number" step="0.01" th:field="*{precioVenta}" required>
+        <br><br>
+
+        <label>Stock actual:</label>
+        <input type="number" th:field="*{stockActual}" required>
+        <br><br>
+
+        <label>Stock mínimo:</label>
+        <input type="number" th:field="*{stockMinimo}" required>
+        <br><br>
+
+        <label>Unidad:</label>
+        <input type="text" th:field="*{unidad}" required>
+        <br><br>
+
+        <label>Activo:</label>
+        <input type="checkbox" th:field="*{activo}">
+        <br><br>
+
+        <button type="submit">Guardar</button>
+    </form>
+
+    <br>
+    <a th:href="@{/productos}">Volver</a>
+</body>
+</html>

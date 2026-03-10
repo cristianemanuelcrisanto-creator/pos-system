@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Gasto</title>
+</head>
+<body>
+<h1>Nuevo Gasto</h1>
+
+<form th:action="@{/gastos/guardar}" th:object="${gasto}" method="post">
+    <label>Concepto:</label>
+    <input type="text" th:field="*{concepto}" required>
+    <br><br>
+
+    <label>Categoría:</label>
+    <input type="text" th:field="*{categoria}" required>
+    <br><br>
+
+    <label>Monto:</label>
+    <input type="number" step="0.01" th:field="*{monto}" required>
+    <br><br>
+
+    <button type="submit">Guardar</button>
+</form>
+
+<br>
+<a th:href="@{/gastos}">Volver</a>
+</body>
+</html>

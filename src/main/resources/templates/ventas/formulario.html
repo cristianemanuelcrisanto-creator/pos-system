@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nueva Venta</title>
+</head>
+<body>
+<h1>Nueva Venta</h1>
+
+<p th:if="${error}" th:text="${error}" style="color:red;"></p>
+
+<h2>Agregar producto</h2>
+<form th:action="@{/ventas/agregar}" method="post">
+    <label>Producto:</label>
+    <select name="productoId" required>
+        <option value="">Selecciona un producto</option>
+        <option th:each="producto : ${productos}"
+                th:value="${producto.id}"
+                th:text="${producto.nombre + ' - $' + producto.precioVenta + ' - Stock: ' + producto.stockActual}">
+        </option>
+    </select>
+
+    <label>Cantidad:</label>
+    <input type="number" name="cantidad" min="1" required>
+
+    <button type="submit">Agregar</button>
+</form>
+
+<br>
+
+<h2>Carrito</h2>
+<table border="1" th:if="${carrito != null and !carrito.isEmpty()}">
+    <thead>
+    <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Precio unitario</th>
+        <th>Subtotal</th>
+        <th>Acción</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${carrito}">
+        <td th:text="${item.nombreProducto}"></td>
+        <td th:text="${item.cantidad}"></td>
+        <td th:text="${item.precioUnitario}"></td>
+        <td th:text="${item.subtotal}"></td>
+        <td>
+            <a th:href="@{/ventas/eliminar-item/{id}(id=${item.productoId})}">Eliminar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${carrito == null or carrito.isEmpty()}">No hay productos en el carrito.</p>
+
+<br>
+<h3>Total: $<span th:text="${total}"></span></h3>
+
+<form th:action="@{/ventas/guardar}" method="post">
+    <label>Método de pago:</label>
+    <select name="metodoPago" required>
+        <option value="EFECTIVO">Efectivo</option>
+        <option value="TRANSFERENCIA">Transferencia</option>
+    </select>
+
+    <button type="submit">Cobrar</button>
+</form>
+
+<br>
+<a th:href="@{/}">Volver al inicio</a>
+</body>
+</html>

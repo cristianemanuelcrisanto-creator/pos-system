@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Ventas</title>
+</head>
+<body>
+
+<h1>Historial de Ventas</h1>
+
+<a href="/ventas/nueva">Nueva venta</a>
+
+<br><br>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Método de pago</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr th:each="venta : ${ventas}">
+            <td th:text="${venta.id}"></td>
+            <td th:text="${venta.fechaHora}"></td>
+            <td th:text="${venta.metodoPago}"></td>
+            <td th:text="${venta.total}"></td>
+        </tr>
+    </tbody>
+
+</table>
+
+<br>
+
+<a href="/">Volver al inicio</a>
+
+</body>
+</html>

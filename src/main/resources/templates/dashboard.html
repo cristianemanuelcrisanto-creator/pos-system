@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+</head>
+<body>
+<h1>Dashboard del Negocio</h1>
+
+<h2>Resumen general</h2>
+<ul>
+    <li>Total de ventas: $<span th:text="${totalVentas}"></span></li>
+    <li>Total de gastos: $<span th:text="${totalGastos}"></span></li>
+    <li>Utilidad estimada: $<span th:text="${utilidad}"></span></li>
+    <li>Total de productos registrados: <span th:text="${totalProductos}"></span></li>
+</ul>
+
+<h2>Productos con stock bajo</h2>
+<table border="1" th:if="${productosStockBajo != null and !productosStockBajo.isEmpty()}">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Stock actual</th>
+        <th>Stock mínimo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="producto : ${productosStockBajo}">
+        <td th:text="${producto.id}"></td>
+        <td th:text="${producto.nombre}"></td>
+        <td th:text="${producto.stockActual}"></td>
+        <td th:text="${producto.stockMinimo}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${productosStockBajo == null or productosStockBajo.isEmpty()}">
+    No hay productos con stock bajo.
+</p>
+
+<br>
+<a href="/">Volver al inicio</a>
+</body>
+</html>
