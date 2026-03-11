@@ -364,3 +364,12 @@ a:hover {
 .total-box strong {
     font-size: 34px;
 }
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.card p {
+    margin: 10px 0;
+}

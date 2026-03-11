@@ -20,6 +20,10 @@ public class Venta {
 
     private String metodoPago;
 
+    private BigDecimal montoRecibido;
+
+    private BigDecimal cambio;
+
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL)
     private List<DetalleVenta> detalles = new ArrayList<>();
 
@@ -52,6 +56,22 @@ public class Venta {
 
     public void setMetodoPago(String metodoPago) {
         this.metodoPago = metodoPago;
+    }
+
+    public BigDecimal getMontoRecibido() {
+        return montoRecibido;
+    }
+
+    public void setMontoRecibido(BigDecimal montoRecibido) {
+        this.montoRecibido = montoRecibido;
+    }
+
+    public BigDecimal getCambio() {
+        return cambio;
+    }
+
+    public void setCambio(BigDecimal cambio) {
+        this.cambio = cambio;
     }
 
     public List<DetalleVenta> getDetalles() {

@@ -1,75 +1,181 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Punto de Venta</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
+
 <body>
+
 <div class="container">
+
     <h1 class="page-title">Punto de venta</h1>
     <p class="subtitle">Busca productos rápido, agrégalos al carrito y cobra sin perder tiempo.</p>
 
-    <p th:if="${error}" th:text="${error}" class="text-danger" style="margin-bottom: 18px;"></p>
+    <p th:if="${error}" th:text="${error}" class="text-danger"></p>
+    <p th:if="${success}" th:text="${success}" style="color:green;"></p>
+
+    <!-- ACCESOS RAPIDOS RESTAURANTE -->
+
+    <div class="card" style="margin-bottom:20px;">
+
+        <h2 style="margin-bottom:12px;">Accesos rápidos restaurante</h2>
+
+        <div class="actions-inline" style="margin-bottom:15px;">
+
+            <form th:if="${comidaCompleta != null}" th:action="@{/ventas/agregar}" method="post">
+                <input type="hidden" name="productoId" th:value="${comidaCompleta.id}">
+                <input type="hidden" name="cantidad" value="1">
+                <button type="submit">🍽 Comida completa</button>
+            </form>
+
+            <form th:if="${comidaSencilla != null}" th:action="@{/ventas/agregar}" method="post">
+                <input type="hidden" name="productoId" th:value="${comidaSencilla.id}">
+                <input type="hidden" name="cantidad" value="1">
+                <button type="submit">🍽 Comida sencilla</button>
+            </form>
+
+            <button type="button" id="btnMostrarExtra">➕ Extra</button>
+
+        </div>
+
+        <!-- PANEL EXTRA -->
+
+        <div id="panelExtra" style="display:none;">
+
+            <h3>Agregar extra</h3>
+
+            <form th:action="@{/ventas/agregar-extra}" method="post" class="product-form">
+
+                <label>Nombre del extra</label>
+                <input type="text" name="nombreExtra" id="nombreExtra" placeholder="Ej. queso, aguacate">
+
+                <label>Precio</label>
+                <input type="number" name="precioExtra" id="precioExtra" step="0.01" min="0.01" placeholder="Ej. 15">
+
+                <label>Cantidad</label>
+                <input type="number" name="cantidad" id="cantidadExtra" min="1" value="1">
+
+                <div class="actions-inline">
+                    <button type="submit">Agregar</button>
+                    <button type="button" id="btnCancelarExtra">Cancelar</button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
 
     <div class="pos-layout">
-        <!-- Catálogo -->
+
+        <!-- CATALOGO -->
+
         <div class="card">
+
             <div class="pos-header-row">
+
                 <h2>Productos</h2>
-                <input type="text" id="buscadorProductos" placeholder="Buscar producto..." class="search-input">
+
+                <input type="text"
+                       id="buscadorProductos"
+                       placeholder="Buscar producto..."
+                       class="search-input">
+
             </div>
 
             <div class="product-grid" id="productGrid">
+
                 <div class="product-card"
                      th:each="producto : ${productos}"
                      th:attr="data-nombre=${#strings.toLowerCase(producto.nombre)}">
 
                     <div class="product-name" th:text="${producto.nombre}"></div>
-                    <div class="product-price">$<span th:text="${producto.precioVenta}"></span></div>
+
+                    <div class="product-price">
+                        $<span th:text="${producto.precioVenta}"></span>
+                    </div>
+
                     <div class="product-stock">
-                        Stock: <span th:text="${producto.stockActual}"></span>
+
+                        <span th:if="${producto.controlaStock}"
+                              th:text="'Stock: ' + ${producto.stockActual}"></span>
+
+                        <span th:unless="${producto.controlaStock}">
+                            Disponible
+                        </span>
+
                     </div>
 
                     <form th:action="@{/ventas/agregar}" method="post" class="product-form">
+
                         <input type="hidden" name="productoId" th:value="${producto.id}">
 
                         <label>Cantidad</label>
-                        <input type="number" name="cantidad" min="1" value="1" required>
 
-                        <button type="submit" th:disabled="${producto.stockActual <= 0}">
+                        <input type="number"
+                               name="cantidad"
+                               min="1"
+                               value="1"
+                               required>
+
+                        <button type="submit"
+                                th:disabled="${producto.controlaStock != null and producto.controlaStock and producto.stockActual <= 0}">
                             Agregar
                         </button>
+
                     </form>
+
                 </div>
+
             </div>
+
         </div>
 
-        <!-- Carrito -->
+        <!-- CARRITO -->
+
         <div class="card pos-cart">
-            <h2 style="margin-bottom: 18px;">Carrito</h2>
+
+            <h2 style="margin-bottom:15px;">Carrito</h2>
 
             <table th:if="${carrito != null and !carrito.isEmpty()}">
+
                 <thead>
+
                 <tr>
                     <th>Producto</th>
-                    <th>Cant.</th>
+                    <th>Cant</th>
                     <th>Subtotal</th>
-                    <th>Acción</th>
+                    <th></th>
                 </tr>
+
                 </thead>
+
                 <tbody>
+
                 <tr th:each="item : ${carrito}">
+
                     <td th:text="${item.nombreProducto}"></td>
+
                     <td th:text="${item.cantidad}"></td>
+
                     <td>$<span th:text="${item.subtotal}"></span></td>
+
                     <td>
-                        <a th:href="@{/ventas/eliminar-item/{id}(id=${item.productoId})}" class="text-danger">
+
+                        <a th:href="@{/ventas/eliminar-item/{id}(id=${item.productoId})}"
+                           class="text-danger">
                             Quitar
                         </a>
+
                     </td>
+
                 </tr>
+
                 </tbody>
+
             </table>
 
             <p th:if="${carrito == null or carrito.isEmpty()}">
@@ -77,45 +183,178 @@
             </p>
 
             <div class="total-box">
+
                 <span>Total</span>
+
                 <strong>$<span th:text="${total}"></span></strong>
+
             </div>
 
+            <!-- COBRO -->
+
             <form th:action="@{/ventas/guardar}" method="post">
-                <label>Método de pago:</label>
-                <select name="metodoPago" required>
+
+                <label>Método de pago</label>
+
+                <select name="metodoPago" id="metodoPago" required>
+
                     <option value="EFECTIVO">Efectivo</option>
                     <option value="TRANSFERENCIA">Transferencia</option>
+
                 </select>
 
-                <div class="actions-inline">
-                    <button type="submit">Cobrar</button>
-                    <a th:href="@{/ventas}" class="btn btn-secondary">Historial</a>
+                <label>Paga con</label>
+
+                <input type="number"
+                       name="montoRecibido"
+                       id="montoRecibido"
+                       step="0.01"
+                       min="0"
+                       required>
+
+                <div class="total-box" style="margin-top:10px;">
+
+                    <span>Cambio</span>
+
+                    <strong>$<span id="cambioMostrado">0.00</span></strong>
+
                 </div>
+
+                <div class="actions-inline">
+
+                    <button type="submit">Cobrar</button>
+
+                    <a th:href="@{/ventas}" class="btn btn-secondary">
+                        Historial
+                    </a>
+
+                </div>
+
             </form>
+
         </div>
+
     </div>
 
-    <a th:href="@{/}" class="link-back">Volver al inicio</a>
 </div>
 
-<script>
-    const buscador = document.getElementById('buscadorProductos');
-    const tarjetas = document.querySelectorAll('.product-card');
+<script th:inline="javascript">
 
-    buscador.addEventListener('input', function () {
-        const texto = this.value.toLowerCase().trim();
+/* BUSCADOR PRODUCTOS */
 
-        tarjetas.forEach(tarjeta => {
-            const nombre = tarjeta.getAttribute('data-nombre');
+const buscador = document.getElementById('buscadorProductos');
 
-            if (nombre.includes(texto)) {
-                tarjeta.style.display = 'block';
-            } else {
-                tarjeta.style.display = 'none';
-            }
-        });
+const tarjetas = document.querySelectorAll('.product-card');
+
+buscador.addEventListener('input', function () {
+
+    const texto = this.value.toLowerCase().trim();
+
+    tarjetas.forEach(tarjeta => {
+
+        const nombre = tarjeta.getAttribute('data-nombre');
+
+        tarjeta.style.display = nombre.includes(texto) ? 'block' : 'none';
+
     });
+
+});
+
+
+/* CALCULO CAMBIO */
+
+const montoRecibidoInput = document.getElementById('montoRecibido');
+
+const cambioMostrado = document.getElementById('cambioMostrado');
+
+const metodoPago = document.getElementById('metodoPago');
+
+const total = parseFloat('[[${total}]]') || 0;
+
+function actualizarCambio(){
+
+    const monto = parseFloat(montoRecibidoInput.value) || 0;
+
+    let cambio = monto - total;
+
+    if(cambio < 0) cambio = 0;
+
+    cambioMostrado.textContent = cambio.toFixed(2);
+
+}
+
+function actualizarMetodo(){
+
+    if(metodoPago.value === 'TRANSFERENCIA'){
+
+        montoRecibidoInput.value = total.toFixed(2);
+
+        montoRecibidoInput.readOnly = true;
+
+    } else {
+
+        montoRecibidoInput.readOnly = false;
+
+    }
+
+    actualizarCambio();
+
+}
+
+montoRecibidoInput.addEventListener('input', actualizarCambio);
+
+metodoPago.addEventListener('change', actualizarMetodo);
+
+actualizarMetodo();
+
+
+/* PANEL EXTRA */
+
+const btnMostrarExtra = document.getElementById('btnMostrarExtra');
+
+const panelExtra = document.getElementById('panelExtra');
+
+const btnCancelarExtra = document.getElementById('btnCancelarExtra');
+
+const nombreExtra = document.getElementById('nombreExtra');
+
+const precioExtra = document.getElementById('precioExtra');
+
+const cantidadExtra = document.getElementById('cantidadExtra');
+
+btnMostrarExtra.addEventListener('click', () => {
+
+    panelExtra.style.display = 'block';
+
+    nombreExtra.required = true;
+
+    precioExtra.required = true;
+
+    cantidadExtra.required = true;
+
+    nombreExtra.focus();
+
+});
+
+btnCancelarExtra.addEventListener('click', () => {
+
+    panelExtra.style.display = 'none';
+
+    nombreExtra.required = false;
+
+    precioExtra.required = false;
+
+    cantidadExtra.required = false;
+
+    nombreExtra.value = "";
+
+    precioExtra.value = "";
+
+    cantidadExtra.value = 1;
+
+});
+
 </script>
+
 </body>
 </html>

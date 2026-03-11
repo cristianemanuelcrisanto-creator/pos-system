@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -42,14 +43,7 @@ public class VentaController {
             session.setAttribute("carrito", carrito);
         }
 
-        BigDecimal total = carrito.stream()
-                .map(ItemVenta::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        model.addAttribute("productos", productoRepository.findAll());
-        model.addAttribute("carrito", carrito);
-        model.addAttribute("total", total);
-
+        cargarDatosFormulario(model, carrito);
         return "ventas/formulario";
     }
 
@@ -57,17 +51,31 @@ public class VentaController {
     public String agregarAlCarrito(@RequestParam Long productoId,
                                    @RequestParam Integer cantidad,
                                    HttpSession session,
-                                   Model model) {
+                                   RedirectAttributes redirectAttributes) {
 
         Producto producto = productoRepository.findById(productoId).orElseThrow();
 
         if (cantidad <= 0) {
+            redirectAttributes.addFlashAttribute("error", "La cantidad debe ser mayor a 0");
             return "redirect:/ventas/nueva";
         }
 
         List<ItemVenta> carrito = (List<ItemVenta>) session.getAttribute("carrito");
         if (carrito == null) {
             carrito = new ArrayList<>();
+        }
+
+        if (Boolean.TRUE.equals(producto.getControlaStock())) {
+            int cantidadEnCarrito = carrito.stream()
+                    .filter(item -> item.getProductoId().equals(productoId))
+                    .mapToInt(ItemVenta::getCantidad)
+                    .sum();
+
+            if (cantidadEnCarrito + cantidad > producto.getStockActual()) {
+                redirectAttributes.addFlashAttribute("error",
+                        "No hay suficiente stock para: " + producto.getNombre());
+                return "redirect:/ventas/nueva";
+            }
         }
 
         BigDecimal subtotal = producto.getPrecioVenta().multiply(BigDecimal.valueOf(cantidad));
@@ -95,6 +103,58 @@ public class VentaController {
         }
 
         session.setAttribute("carrito", carrito);
+        return "redirect:/ventas/nueva";
+    }
+
+    @PostMapping("/agregar-extra")
+    public String agregarExtra(@RequestParam String nombreExtra,
+                               @RequestParam BigDecimal precioExtra,
+                               @RequestParam(defaultValue = "1") Integer cantidad,
+                               HttpSession session,
+                               RedirectAttributes redirectAttributes) {
+
+        if (nombreExtra == null || nombreExtra.trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Debes escribir el nombre del extra");
+            return "redirect:/ventas/nueva";
+        }
+
+        if (precioExtra == null || precioExtra.compareTo(BigDecimal.ZERO) <= 0) {
+            redirectAttributes.addFlashAttribute("error", "El precio del extra debe ser mayor a 0");
+            return "redirect:/ventas/nueva";
+        }
+
+        if (cantidad <= 0) {
+            redirectAttributes.addFlashAttribute("error", "La cantidad del extra debe ser mayor a 0");
+            return "redirect:/ventas/nueva";
+        }
+
+        Producto productoExtra = productoRepository
+                .findFirstByNombreIgnoreCase("Extra restaurante")
+                .orElse(null);
+
+        if (productoExtra == null) {
+            redirectAttributes.addFlashAttribute("error",
+                    "No existe el producto base 'Extra restaurante'. Créalo primero.");
+            return "redirect:/ventas/nueva";
+        }
+
+        List<ItemVenta> carrito = (List<ItemVenta>) session.getAttribute("carrito");
+        if (carrito == null) {
+            carrito = new ArrayList<>();
+        }
+
+        BigDecimal subtotal = precioExtra.multiply(BigDecimal.valueOf(cantidad));
+
+        carrito.add(new ItemVenta(
+                productoExtra.getId(),
+                nombreExtra.trim(),
+                cantidad,
+                precioExtra,
+                subtotal
+        ));
+
+        session.setAttribute("carrito", carrito);
+        redirectAttributes.addFlashAttribute("success", "Extra agregado correctamente");
 
         return "redirect:/ventas/nueva";
     }
@@ -111,47 +171,59 @@ public class VentaController {
 
     @PostMapping("/guardar")
     public String guardarVenta(@RequestParam String metodoPago,
+                               @RequestParam BigDecimal montoRecibido,
                                HttpSession session,
-                               Model model) {
+                               Model model,
+                               RedirectAttributes redirectAttributes) {
 
         List<ItemVenta> carrito = (List<ItemVenta>) session.getAttribute("carrito");
 
         if (carrito == null || carrito.isEmpty()) {
             model.addAttribute("error", "El carrito está vacío");
-            model.addAttribute("productos", productoRepository.findAll());
-            model.addAttribute("carrito", new ArrayList<>());
-            model.addAttribute("total", BigDecimal.ZERO);
+            cargarDatosFormulario(model, new ArrayList<>());
             return "ventas/formulario";
         }
 
+        BigDecimal total = carrito.stream()
+                .map(ItemVenta::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
         for (ItemVenta item : carrito) {
             Producto producto = productoRepository.findById(item.getProductoId()).orElseThrow();
-            if (producto.getStockActual() < item.getCantidad()) {
+
+            if (Boolean.TRUE.equals(producto.getControlaStock())
+                    && producto.getStockActual() < item.getCantidad()) {
+
                 model.addAttribute("error", "No hay suficiente stock para: " + producto.getNombre());
-                model.addAttribute("productos", productoRepository.findAll());
-                model.addAttribute("carrito", carrito);
-
-                BigDecimal total = carrito.stream()
-                        .map(ItemVenta::getSubtotal)
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-                model.addAttribute("total", total);
+                cargarDatosFormulario(model, carrito);
                 return "ventas/formulario";
             }
         }
 
+        if (montoRecibido.compareTo(total) < 0) {
+            model.addAttribute("error", "El monto recibido no puede ser menor al total");
+            cargarDatosFormulario(model, carrito);
+            return "ventas/formulario";
+        }
+
+        BigDecimal cambio = montoRecibido.subtract(total);
+
         Venta venta = new Venta();
         venta.setFechaHora(LocalDateTime.now());
         venta.setMetodoPago(metodoPago);
+        venta.setTotal(total);
+        venta.setMontoRecibido(montoRecibido);
+        venta.setCambio(cambio);
 
-        BigDecimal total = BigDecimal.ZERO;
         List<DetalleVenta> detalles = new ArrayList<>();
 
         for (ItemVenta item : carrito) {
             Producto producto = productoRepository.findById(item.getProductoId()).orElseThrow();
 
-            producto.setStockActual(producto.getStockActual() - item.getCantidad());
-            productoRepository.save(producto);
+            if (Boolean.TRUE.equals(producto.getControlaStock())) {
+                producto.setStockActual(producto.getStockActual() - item.getCantidad());
+                productoRepository.save(producto);
+            }
 
             DetalleVenta detalle = new DetalleVenta();
             detalle.setVenta(venta);
@@ -161,16 +233,29 @@ public class VentaController {
             detalle.setSubtotal(item.getSubtotal());
 
             detalles.add(detalle);
-            total = total.add(item.getSubtotal());
         }
 
-        venta.setTotal(total);
         venta.setDetalles(detalles);
-
         ventaRepository.save(venta);
 
         session.removeAttribute("carrito");
 
-        return "redirect:/ventas";
+        redirectAttributes.addFlashAttribute("success", "Venta registrada correctamente");
+        return "redirect:/ventas/nueva";
+    }
+
+    private void cargarDatosFormulario(Model model, List<ItemVenta> carrito) {
+        BigDecimal total = carrito.stream()
+                .map(ItemVenta::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Producto comidaCompleta = productoRepository.findFirstByNombreIgnoreCase("Comida completa").orElse(null);
+        Producto comidaSencilla = productoRepository.findFirstByNombreIgnoreCase("Comida sencilla").orElse(null);
+
+        model.addAttribute("productos", productoRepository.findAll());
+        model.addAttribute("carrito", carrito);
+        model.addAttribute("total", total);
+        model.addAttribute("comidaCompleta", comidaCompleta);
+        model.addAttribute("comidaSencilla", comidaSencilla);
     }
 }

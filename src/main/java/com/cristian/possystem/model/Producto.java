@@ -12,13 +12,23 @@ public class Producto {
     private Long id;
 
     private String nombre;
+
     private String categoria;
+
     private BigDecimal precioCompra;
+
     private BigDecimal precioVenta;
+
     private Integer stockActual;
+
     private Integer stockMinimo;
+
     private String unidad;
+
     private Boolean activo;
+
+    @Column(name = "controla_stock")
+    private Boolean controlaStock = true;
 
     public Producto() {
     }
@@ -26,9 +36,11 @@ public class Producto {
     public Long getId() {
         return id;
     }
-        public void setId(Long id) {
+
+    public void setId(Long id) {
          this.id = id;
     }
+
     public String getNombre() {
         return nombre;
     }
@@ -91,5 +103,13 @@ public class Producto {
 
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public Boolean getControlaStock() {
+        return controlaStock;
+    }
+
+    public void setControlaStock(Boolean controlaStock) {
+        this.controlaStock = controlaStock;
     }
 }

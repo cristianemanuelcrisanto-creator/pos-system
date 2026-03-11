@@ -26,15 +26,36 @@ public class DashboardController {
 
     @GetMapping("/dashboard")
     public String mostrarDashboard(Model model) {
-        BigDecimal totalVentas = ventaRepository.obtenerTotalVentas();
-        BigDecimal totalGastos = gastoRepository.obtenerTotalGastos();
-        BigDecimal utilidad = totalVentas.subtract(totalGastos);
 
-        model.addAttribute("totalVentas", totalVentas);
-        model.addAttribute("totalGastos", totalGastos);
-        model.addAttribute("utilidad", utilidad);
-        model.addAttribute("totalProductos", productoRepository.count());
-        model.addAttribute("productosStockBajo", productoRepository.findByStockActualLessThanEqual(5));
+        BigDecimal ventasTotales = ventaRepository.obtenerTotalVentas();
+        BigDecimal gastosTotales = gastoRepository.obtenerTotalGastos();
+        BigDecimal utilidadTotal = ventasTotales.subtract(gastosTotales);
+
+        BigDecimal ventasHoy = ventaRepository.obtenerTotalVentasDelDia();
+        BigDecimal gastosHoy = gastoRepository.obtenerTotalGastosDelDia();
+        BigDecimal utilidadHoy = ventasHoy.subtract(gastosHoy);
+
+        BigDecimal ventasMes = ventaRepository.obtenerTotalVentasDelMes();
+        BigDecimal gastosMes = gastoRepository.obtenerTotalGastosDelMes();
+        BigDecimal utilidadMes = ventasMes.subtract(gastosMes);
+
+        long totalProductos = productoRepository.count();
+        long productosStockBajo = productoRepository.findByStockActualLessThanEqual(5).size();
+
+        model.addAttribute("ventasTotales", ventasTotales);
+        model.addAttribute("gastosTotales", gastosTotales);
+        model.addAttribute("utilidadTotal", utilidadTotal);
+
+        model.addAttribute("ventasHoy", ventasHoy);
+        model.addAttribute("gastosHoy", gastosHoy);
+        model.addAttribute("utilidadHoy", utilidadHoy);
+
+        model.addAttribute("ventasMes", ventasMes);
+        model.addAttribute("gastosMes", gastosMes);
+        model.addAttribute("utilidadMes", utilidadMes);
+
+        model.addAttribute("totalProductos", totalProductos);
+        model.addAttribute("productosStockBajo", productosStockBajo);
 
         return "dashboard";
     }

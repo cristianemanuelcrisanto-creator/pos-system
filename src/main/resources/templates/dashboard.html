@@ -7,59 +7,46 @@
 </head>
 <body>
 <div class="container">
-    <h1 class="page-title">Dashboard del Negocio</h1>
-    <p class="subtitle">Resumen general de ventas, gastos y productos.</p>
+    <h1 class="page-title">Dashboard del negocio</h1>
+    <p class="subtitle">Resumen general de ventas, gastos y utilidad.</p>
 
-    <div class="grid grid-2">
-        <div class="stat-card">
-            <div class="stat-label">Total de ventas</div>
-            <div class="stat-value">$<span th:text="${totalVentas}"></span></div>
+    <div class="dashboard-grid">
+
+        <div class="card">
+            <h2>Hoy</h2>
+            <p><strong>Ventas:</strong> $<span th:text="${ventasHoy}"></span></p>
+            <p><strong>Gastos:</strong> $<span th:text="${gastosHoy}"></span></p>
+            <p><strong>Ganancia:</strong> $<span th:text="${utilidadHoy}"></span></p>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-label">Total de gastos</div>
-            <div class="stat-value">$<span th:text="${totalGastos}"></span></div>
+        <div class="card">
+            <h2>Este mes</h2>
+            <p><strong>Ventas:</strong> $<span th:text="${ventasMes}"></span></p>
+            <p><strong>Gastos:</strong> $<span th:text="${gastosMes}"></span></p>
+            <p><strong>Ganancia:</strong> $<span th:text="${utilidadMes}"></span></p>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-label">Utilidad estimada</div>
-            <div class="stat-value">$<span th:text="${utilidad}"></span></div>
+        <div class="card">
+            <h2>Acumulado total</h2>
+            <p><strong>Ventas:</strong> $<span th:text="${ventasTotales}"></span></p>
+            <p><strong>Gastos:</strong> $<span th:text="${gastosTotales}"></span></p>
+            <p><strong>Ganancia:</strong> $<span th:text="${utilidadTotal}"></span></p>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-label">Productos registrados</div>
-            <div class="stat-value"><span th:text="${totalProductos}"></span></div>
+        <div class="card">
+            <h2>Inventario</h2>
+            <p><strong>Total de productos:</strong> <span th:text="${totalProductos}"></span></p>
+            <p><strong>Stock bajo:</strong> <span th:text="${productosStockBajo}"></span></p>
         </div>
+
     </div>
 
-    <div class="card" style="margin-top: 24px;">
-        <h2 style="margin-bottom: 16px;">Productos con stock bajo</h2>
-
-        <table th:if="${productosStockBajo != null and !productosStockBajo.isEmpty()}">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Stock actual</th>
-                <th>Stock mínimo</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="producto : ${productosStockBajo}">
-                <td th:text="${producto.id}"></td>
-                <td th:text="${producto.nombre}"></td>
-                <td th:text="${producto.stockActual}"></td>
-                <td th:text="${producto.stockMinimo}"></td>
-            </tr>
-            </tbody>
-        </table>
-
-        <p th:if="${productosStockBajo == null or productosStockBajo.isEmpty()}">
-            No hay productos con stock bajo.
-        </p>
+    <div class="actions-inline" style="margin-top: 20px;">
+        <a th:href="@{/ventas/nueva}" class="btn">Ir al POS</a>
+        <a th:href="@{/ventas}" class="btn btn-secondary">Historial de ventas</a>
+        <a th:href="@{/gastos}" class="btn btn-secondary">Gastos</a>
+        <a th:href="@{/}" class="btn btn-secondary">Inicio</a>
     </div>
-
-    <a href="/" class="link-back">Volver al inicio</a>
 </div>
 </body>
 </html>
